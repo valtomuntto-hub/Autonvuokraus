@@ -1,0 +1,172 @@
+/* Perustyylit */
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: url('../images/background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+/* Etusivun navigaatiolaatikko */
+.content-container {
+    max-width: 400px;  /* Muutettu tämä kapeammaksi */
+    margin: 0 auto;    /* Keskittää laatikon */
+    background-color: rgba(211, 237, 63, 0.9);
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Otsikot */
+h1, h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Navigaatiolinkit */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    margin-bottom: 10px;
+}
+
+a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Taulukot */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Lomakkeiden tyylit */
+form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+label {
+    display: inline-block;
+    width: 150px;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="date"],
+input[type="number"],
+select {
+    width: 300px;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+input[type="submit"] {
+    background-color: #0066cc;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #0052a3;
+}
+
+/* Responsiivisuus */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"],
+    input[type="date"],
+    input[type="number"],
+    select {
+        width: 100%;
+    }
+}
+
+/* Vesileima */
+body::after {
+    content: "Local Note: this is a school project only !!!";
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 36px;  /* Isompi fontti */
+    color: rgba(255, 0, 0, 0.7);  /* Punainen väri, vähemmän läpikuultava */
+    font-weight: bold;
+    z-index: -1;
+    text-transform: uppercase;  /* Isot kirjaimet */
+}
+
+/* Viestit (onnistumiset ja virheet) */
+.viesti {
+    background-color: #e6f4e6;
+    border: 1px solid #5cb85c;
+    border-radius: 4px;
+    padding: 10px 15px;
+}
+
+.viesti.virhe {
+    background-color: #fdeaea;
+    border: 1px solid #d9534f;
+    color: #a94442;
+}
+
+/* Taulukon sisällä olevat Poista- ja Palauta-lomakkeet: ei omaa laatikkoa */
+td form {
+    display: inline;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+}
+
+td input[type="submit"] {
+    padding: 5px 10px;
+}
+
+/* Autojen kuvat taulukossa */
+table img {
+    width: 100px;
+    height: auto;
+}
