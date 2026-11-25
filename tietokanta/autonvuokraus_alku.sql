@@ -1,86 +1,66 @@
--- Autonvuokraus: taulut ja yksi esimerkkirivi kustakin
-
--- Näin käytät tiedostoa:
--- 1. Luo ensin tyhjä tietokanta phpMyAdminissa (Uusi - anna nimeksi autonvuokraus).
--- 2. Valitse tietokanta vasemmalta.
--- 3. Valitse Tuonti (Import), valitse tämä tiedosto ja paina Suorita.
-
--- Tiedostossa ei ole CREATE DATABASE- eikä USE-riviä tarkoituksella: tietokanta tehdään ensin käsin.
-
--- TEE ITSE: lisää tietoja niin, että autoja on 7, asiakkaita 6 ja vuokrauksia 4.
--- Voit kirjoittaa lisää INSERT-lauseita tähän tiedostoon tai lisätä rivit suoraan phpMyAdminissa (taulun Lisää-välilehti).
--- Tee ainakin kaksi autoa vuokratuksi: auto.onkovapaa = 0 ja sopimus, jossa palautettu on NULL.
--- Voit myös tehdä taulut itse phpMyAdminissa (Luo taulu) tämän tiedoston mallin mukaan.
-
--- Huom: tiedosto poistaa ensin vanhat taulut auto, asiakas ja sopimus ja tekee ne uudestaan.
--- Tuonti nollaa siis näiden taulujen sisällön.
-
--- Vierasavaimia (FOREIGN KEY) ei ole. Ne lisätään lisätehtävässä F.
--- Siihen asti taulujen yhteys (asiakasid ja autoid) tarkistetaan PHP-koodissa.
 
 SET NAMES utf8mb4;
+DROP TABLE IF EXISTS vuokraukset;
+DROP TABLE IF EXISTS asiakkaat;
+DROP TABLE IF EXISTS autot;
 
-DROP TABLE IF EXISTS sopimus;
-DROP TABLE IF EXISTS asiakas;
-DROP TABLE IF EXISTS auto;
-
--- Taulu auto: yksi rivi per vuokra-auto
--- onkoautomaatti: 1 = automaatti, 0 = manuaali
 -- onkovapaa: 1 = vapaana, 0 = vuokrattu
-CREATE TABLE auto (
-  id INT NOT NULL AUTO_INCREMENT,
-  rekno VARCHAR(10) NOT NULL,
-  valmistaja VARCHAR(100) NOT NULL,
-  malli VARCHAR(100) NOT NULL,
-  onkoautomaatti TINYINT(1) NOT NULL DEFAULT 0,
-  moottori VARCHAR(50) NOT NULL,
-  istumapaikat INT NOT NULL,
-  hinta DECIMAL(6,2) NOT NULL,
-  onkovapaa TINYINT(1) NOT NULL DEFAULT 1,
-  PRIMARY KEY (id),
-  UNIQUE KEY rekno (rekno)
+CREATE TABLE autot (
+  auto_id INT AUTO_INCREMENT PRIMARY KEY,
+  rekisterinumero VARCHAR(7),
+  merkki VARCHAR(18),
+  malli VARCHAR(90),
+  tyyppi VARCHAR(20),
+  korimalli VARCHAR(20),
+  kayttovoima VARCHAR(20),
+  vaihteisto VARCHAR(20),
+  vuosimalli INT,
+  hinta DECIMAL(6,2),
+  onkovapaa TINYINT(1) DEFAULT 1
 ) DEFAULT CHARSET=utf8mb4;
 
--- Taulu asiakas: yksi rivi per asiakas
--- saika = syntymäaika (muoto VVVV-KK-PP)
-CREATE TABLE asiakas (
-  id INT NOT NULL AUTO_INCREMENT,
-  etunimi VARCHAR(100) NOT NULL,
-  sukunimi VARCHAR(100) NOT NULL,
-  katuosoite VARCHAR(150) NOT NULL,
-  postitoimipaikka VARCHAR(100) NOT NULL,
-  puhelin VARCHAR(20) NOT NULL,
-  saika DATE NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id)
+CREATE TABLE asiakkaat (
+  asiakas_id INT AUTO_INCREMENT PRIMARY KEY,
+  etunimi VARCHAR(50),
+  sukunimi VARCHAR(50),
+  puhelin VARCHAR(20),
+  henkilotunnus CHAR(11),
+  sahkoposti VARCHAR(100),
+  ajokortti VARCHAR(20),
+  osoite VARCHAR(100)
 ) DEFAULT CHARSET=utf8mb4;
 
--- Taulu sopimus: yksi rivi per vuokraus
--- asiakasid viittaa taulun asiakas sarakkeeseen id
--- autoid viittaa taulun auto sarakkeeseen id
--- palautettu: päivä jona auto palautettiin, NULL = auto on vielä vuokrattuna
-CREATE TABLE sopimus (
-  id INT NOT NULL AUTO_INCREMENT,
-  asiakasid INT NOT NULL,
-  autoid INT NOT NULL,
-  aloituspvm DATE NOT NULL,
-  lopetuspvm DATE NOT NULL,
-  palautettu DATE NULL DEFAULT NULL,
-  PRIMARY KEY (id),
-  KEY asiakasid (asiakasid),
-  KEY autoid (autoid)
+-- palautettu: NULL = auto on vielä vuokrattuna
+CREATE TABLE vuokraukset (
+  vuokraus_id INT AUTO_INCREMENT PRIMARY KEY,
+  auto_id INT,
+  asiakas_id INT,
+  pvm DATE,
+  palautettu DATE NULL DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4;
 
--- Esimerkkirivit (yksi kustakin taulusta). Lisää loput itse.
-INSERT INTO auto (rekno, valmistaja, malli, onkoautomaatti, moottori, istumapaikat, hinta, onkovapaa) VALUES
-('ABC-313', 'Toyota', 'Corolla', 1, 'bensa', 5, 101.00, 1);
+-- 7 autoa autot 1 ja 3 on vuokrattu
+INSERT INTO autot (rekisterinumero, merkki, malli, tyyppi, korimalli, kayttovoima, vaihteisto, vuosimalli, hinta, onkovapaa) VALUES
+('ABC-123', 'Volvo', 'XC40', 'Henkilöauto', 'Maastoauto', 'Bensiini', 'Manuaali', 2026, 99.90, 0),
+('BCD-234', 'Toyota', 'Corolla', 'Henkilöauto', 'Farmari', 'Hybridi', 'Automaatti', 2022, 79.90, 1),
+('CDE-345', 'Volkswagen', 'Golf', 'Henkilöauto', 'Viistoperä', 'Bensiini', 'Manuaali', 2021, 69.90, 0),
+('DEF-456', 'Ford', 'Focus', 'Henkilöauto', 'Viistoperä', 'Diesel', 'Automaatti', 2020, 74.90, 1),
+('EFG-567', 'Skoda', 'Octavia', 'Henkilöauto', 'Farmari', 'Diesel', 'Automaatti', 2023, 84.90, 1),
+('FGH-678', 'Nissan', 'Qashqai', 'Henkilöauto', 'Maastoauto', 'Bensiini', 'Manuaali', 2022, 89.90, 1),
+('GHJ-789', 'Toyota', 'Yaris', 'Henkilöauto', 'Viistoperä', 'Hybridi', 'Automaatti', 2024, 64.90, 1);
 
-INSERT INTO asiakas (etunimi, sukunimi, katuosoite, postitoimipaikka, puhelin, saika, email) VALUES
-('Liisa', 'Meikäläinen', 'Kotikatu 11 A 3', '00100 Helsinki', '0501234567', '2004-10-08', 'liisa.meikalainen@example.com');
+-- 6 asiakasta 
+INSERT INTO asiakkaat (etunimi, sukunimi, puhelin, henkilotunnus, sahkoposti, ajokortti, osoite) VALUES
+('Matti', 'Meikäläinen', '0412345678', '010190-123A', 'matti.meikalainen@example.com', '123456789', 'Isokyläntie 14, Sipoo'),
+('Liisa', 'Virtanen', '0501234567', '081004A123B', 'liisa.virtanen@example.com', '234567890', 'Kotikatu 11 A 3, Helsinki'),
+('Ville', 'Korhonen', '0451112233', '150385-234C', 'ville.korhonen@example.com', '345678901', 'Mannerheimintie 5, Helsinki'),
+('Aino', 'Nieminen', '0403334455', '220792-345D', 'aino.nieminen@example.com', '456789012', 'Tikkurilantie 8, Vantaa'),
+('Jari', 'Laine', '0447778899', '030678-456E', 'jari.laine@example.com', '567890123', 'Kauppakatu 2, Porvoo'),
+('Sara', 'Mäkinen', '0409998877', '111199A567F', 'sara.makinen@example.com', '678901234', 'Rantatie 21, Espoo');
 
--- Vuokraus: asiakas 1 on vuokrannut auton 1 ja palauttanut sen (palautettu ei ole NULL)
-INSERT INTO sopimus (asiakasid, autoid, aloituspvm, lopetuspvm, palautettu) VALUES
-(1, 1, '2026-11-01', '2026-11-05', '2026-11-05');
-
--- TEE ITSE: lisää 6 autoa, 5 asiakasta ja 3 vuokrausta lisää.
--- Muista: avoimessa vuokrauksessa palautettu on NULL ja auton onkovapaa on 0.
+-- 4 vuokrausta: vuokraukset 1 ja 2 ovat avoimia
+INSERT INTO vuokraukset (auto_id, asiakas_id, pvm, palautettu) VALUES
+(1, 1, '2026-11-25', NULL),
+(3, 2, '2026-11-23', NULL),
+(2, 3, '2026-11-01', '2026-11-05'),
+(4, 4, '2026-11-10', '2026-11-14');
